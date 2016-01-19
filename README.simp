@@ -1,0 +1,140 @@
+== Introduction
+
+This module is based off of the the Puppetlabs MCollective module and has
+been modified to suit the needs of SIMP.  This module SHOULD NOT be used
+directly.  A stock class is provided in the simp puppet module.
+
+== Usage
+
+Include the simp::mcollective class on any node.  The class includes
+Java, ActiveMQ, and MCollective.  The default settings for MCollective can
+be found in:
+
+    hieratata/simp/mcollective/default.yaml
+
+Default Settings (Done for you)
+
+  * Any node simp::mcollective is included on will become an mcollective server.
+    To toggle mcollective server, client, or middleware see additional
+    settings below.
+  * Full SSL enabled in ActiveMQ and Mcollective.
+    - MCO ssl plugin RSA keys are auto-generated, and distributed to
+      /etc/mcollective/ssl/mco_autokeys/.
+    - Activemq x509 certs default to system certs, in /etc/pki/. FakeCA is the default ca.
+      Java keystores are automatically generated, containing the CA and certs.
+    - Client public keys are distributed from the pki module (pki/keydist/mcollective) to
+      /etc/mcollective/ssl.
+  * Appropriate Pam and IPtables rules are managed.
+
+Additional Required Settings (NOT Done for you)
+
+  * All passwords must be specified for activemq/mcollective.
+    - activemq::mq_admin_password : 'change_me'
+    - activemq::mq_cluster_password : 'change_me'
+    - simp::mcollective::keystore_password : 'change_me'
+    - simp::mcollective::truststore_password : 'change_me'
+    - mcollective::middleware_admin_password : 'change_me'
+    - mcollective::middleware_password : 'change_me'
+
+  * You must specify the CA used by your activemq truststore. NOTE: This is temporary, and
+    should not be necessary post beta release.
+    - simp::mcollective::truststore_certificate : '/etc/pki/cacerts/<system_cacert>.pem'
+
+  * You must disable manage_config for activemq
+    - activemq::manage_config : false
+
+  * You must specify the activemq middleware host.
+    - mcollective::middleware_hosts :
+        - 'your.middleware.fqdn'
+
+  * Add the following to Hiera to toggle your node between an
+    Mcollective server/client/middleware node.
+      - mcollective::server : true/false     (true by default)
+      - mcollective::middleware : true/false (false by default)
+      - mcollective::client : true/false     (false by default)
+
+
+== Setting Up A User
+
+Every user must have access to:
+  1. Their own private key.
+  2. x509 cert.
+  3. RSA public key generated from their private key.
+  4. A Copy of the mcollective ssl RSA public key.
+
+1/2: Key/Cert pairs can be supplied externally or generated with the SIMP FakeCA.
+     To gen usercerts, follow the instructions for usergen.
+
+3:   Once a key/cert pair is obtained, run the following to generate an RSA public key
+     from the user's private key
+
+     openssl rsa -in user.name.pem -pubout > user.name_rsa.pem
+
+4:   The mcollective RSA public key can be found in /etc/mcollective/ssl/mco_autokey/ by default.
+
+A copy of every user's RSA public key (3) must be copied to /etc/puppet/environments/simp/keydist/mcollective.
+A good place to keep a copy of each cert/key (1-4) is in the home directory of the mco admins, on
+every client node (/home/admin.user/ssl/).
+
+The CA which signed the user's cert must be added to the ActiveMQ truststore. (/etc/activemq/truststore.jks)
+If SIMP FakeCA is used, this is done by default.
+
+An mcollective config file must be created for every user (~/.mcollective). It must reference
+the user's keys, the ca, and a copy of the server's public rsa key.  Here is an example config file:
+
+  collectives = mcollective
+  connector = activemq
+  direct_addressing = 1
+  libdir = /usr/local/libexec/mcollective:/usr/libexec/mcollective
+  logger_type = console
+  loglevel = warn
+  main_collective = mcollective
+  plugin.activemq.base64 = yes
+  plugin.activemq.pool.1.host = your.amqp.fqdn
+  plugin.activemq.pool.1.password = change_me (match with hiera mcollective::middleware_password)
+  plugin.activemq.pool.1.port = 61614
+  plugin.activemq.pool.1.ssl = 1
+  plugin.activemq.pool.1.ssl.ca = /etc/pki/cacerts/cacerts.pem
+  plugin.activemq.pool.1.ssl.cert = /home/admin.user/ssl/admin.user_pub.pem
+  plugin.activemq.pool.1.ssl.fallback = 0
+  plugin.activemq.pool.1.ssl.key = /home/admin.user/ssl/admin.user.pem
+  plugin.activemq.pool.1.user = mcollective
+  plugin.activemq.pool.size = 1
+  plugin.activemq.randomize = true
+  plugin.ssl_client_private = /home/admin.user/ssl/admin.user.pem
+  plugin.ssl_client_public = /home/admin.user/ssl/admin.user_rsa.pem
+  plugin.ssl_server_public = /home/admin.user/ssl/mco_public.pem
+  securityprovider = ssl
+
+== Example Configuration
+
+Two nodes, both servers.  One hosts the middleware, the other is a client.  A user is established on the node with the client software
+to interract with MCO.
+
+|Puppet Server  |         |Puppet Client  |
+| - Server      |<=======>| - Server      |
+| - Middleware  |         | - Client      |
+|               |         |               |
+
+Some Hostgroup Hiera File or default.yaml
+ mcollective::middleware_hosts :
+   - 'puppet.server.fqdn'
+ simp::mcollective::truststore_certificate : '/etc/pki/cacerts/cacert_abc123.pem'
+ activemq::manage_config : false
+ activemq::mq_admin_password : 'pass1'
+ activemq::mq_cluster_password : 'pass2'
+ simp::mcollective::keystore_password : 'pass3'
+ simp::mcollective::truststore_password : 'pass4'
+ mcollective::middleware_admin_password : 'pass5'
+ mcollective::middleware_password : 'pass6'
+
+
+Puppet Server Hiera:
+ mcollective::middleware : true
+ classes:
+   - 'simp::mcollective'
+
+Puppet Client Hiera:
+ mcollective::client : true
+ classes:
+   - 'simp::mcollective'
