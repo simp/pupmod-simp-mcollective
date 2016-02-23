@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a72e520_dfbd6304",
+        "filename": ".travis.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-02-23T15:43:18Z",
+      "side": 1,
+      "message": "ws",
+      "revId": "71ad100229286ce72bfc3ed32fdddb65094074a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a72e520_9f4a0b26",
+        "filename": "build/pupmod-mcollective.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-02-23T15:43:18Z",
+      "side": 1,
+      "message": "should be simp counterparts",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 42
+      },
+      "revId": "71ad100229286ce72bfc3ed32fdddb65094074a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a72e520_3f3cb793",
+        "filename": "build/pupmod-mcollective.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-02-23T15:43:18Z",
+      "side": 1,
+      "message": "ws",
+      "revId": "71ad100229286ce72bfc3ed32fdddb65094074a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a72e520_1f5e1bea",
+        "filename": "metadata.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-02-23T15:43:18Z",
+      "side": 1,
+      "message": "modify for simp team?",
+      "range": {
+        "startLine": 2,
+        "startChar": 2,
+        "endLine": 4,
+        "endChar": 30
+      },
+      "revId": "71ad100229286ce72bfc3ed32fdddb65094074a0",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
