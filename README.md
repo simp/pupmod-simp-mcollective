@@ -1,686 +1,104 @@
-# mcollective [![Build Status](https://travis-ci.org/puppet-community/puppet-mcollective.svg?branch=master)](https://travis-ci.org/puppet-community/puppet-mcollective)
+[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/simp/pupmod-simp-mcollective.svg)](https://travis-ci.org/simp/pupmod-simp-mcollective) [![SIMP compatibility](https://img.shields.io/badge/SIMP%20compatibility-4.2.*%2F5.1.*-orange.svg)](https://img.shields.io/badge/SIMP%20compatibility-4.2.*%2F5.1.*-orange.svg)
 
-#### Table of Contents
+SIMP MCollective Deployment Guide
+=================================
 
-1. [Overview](#overview)
-2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with mcollective](#setup)
-    * [What the mcollective module affects](#what-the-mcollective-module-affects)
-    * [Beginning with mcollective](#beginning-with-mcollective)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+## Overview and Module Description
 
-## Overview
-
-The mcollective module installs, configures, and manages the mcollective
-agents, and clients of an MCollective cluster.
-
-## Module Description
-
-The mcollective module handles installing and configuring mcollective across a
-range of operating systems and distributions.  Where possible we follow the
-standards laid down by the
-[MCollective Standard Deployment guide](http://docs.puppetlabs.com/mcollective/deploy/standard.html).
-
-### MCollective Terminology
-
-A quick aside, mcollective's terminology differs a little from what you might
-be used to in puppet.  There are 3 main components, the client (the mco
-commands you run to control your servers), the server (a daemon that runs on
-all of your managed nodes and executes the commands), and the middleware (a
-message broker the servers and agent connect to).
-
-If it helps to map these to puppet concepts you loosely have:
-
-* Middleware -> Puppet Master
-* MCollective Server -> Puppet Agent
-* MCollective Client -> no direct equivalent
-
+The SIMP MCollective module is an extension of
+[voxpupuli/puppet-mcollective](https://github.com/voxpupuli/puppet-mcollective).
+Like voxpupuli's module, this module conforms to the
+[mcollective standard deploymet guide](http://docs.puppetlabs.com/mcollective/deploy/standard.html),
+where appropriate.  This module is most effectively used in conjunction with the
+[simp::mcollective stock class](https://github.com/simp/pupmod-simp-simp/blob/master/manifests/mcollective.pp).
 
 ## Setup
 
-### What the mcollective module affects
+MCollective has three primary components: server, client, and middleware.
+By default, any node that includes the
+[simp::mcollective stock class](https://github.com/simp/pupmod-simp-simp/blob/master/manifests/mcollective.pp)
+will include the server and middleware components.
 
-On a server
+    classes:
+      - 'simp::mcollective'
 
-* mcollective package
-* mcollective server configuration file
-* mcollective service
+If you want a node to be a client as well, set:
 
-On a client
+    mcollective::client: true
 
-* mcollective-client package
-* mcollective client configuration file
-* optionally user configuration files (~/.mcollective and ~/.mcollective.d)
+Disabling the server component follows suit:
 
-### Beginning with mcollective
+    mcollective::server: false
 
-Your main entrypoint to the mcollective module is the mcollective class, so
-assuming you have your middleware configured on a node this is all you need to
-add a server to mcollective.
+A host of other variables must be set which cannot have reasonable defaults:
 
-```puppet
-class { '::mcollective':
-  middleware_hosts => [ 'broker1.example.com' ],
-}
-```
+    activemq::mq_admin_password : '<foobarbaz>'
+    activemq::mq_cluster_password : '<foobarbaz>'
+    activemq::manage_config : false
+    simp::mcollective::truststore_certificate : '/etc/pki/cacerts/cacerts.pem'
+    simp::mcollective::keystore_password : '<foobarbaz>'
+    simp::mcollective::truststore_password : '<foobarbaz>'
+    mcollective::middleware_admin_password : '<foobarbaz>'
+    mcollective::middleware_password : '<foobarbaz>'
+    mcollective::middleware_hosts :
+      - '<middleware.host.fqdn>'
 
-## Usage
+All remaining variables have reasonable defaults, and are set in:
 
-Your primary interaction with the mcollective module will be though the main
-mcollective class, with secondary configuration managed by the defined types
-`mcollective::user`, `mcollective::plugin`, `mcollective::actionpolicy`, and
-`mcollective::actionpolicy::rule`.
+    ../hieradata/simp/mcollective/default.yaml
 
-### I just want to run it, what's the minimum I need?
+## Security
 
-```puppet
-node 'broker1.example.com' {
-  include activemq
-}
+For details about the MCollective security framework, reference the
+[MCollective security overview](https://puppetlabs.com/mcollective/security-overview).
 
-node 'server1.example.com' {
-  class { '::mcollective':
-    middleware_hosts => [ 'broker1.example.com' ],
-  }
-}
+Full SSL is enabled in every component of MCollective by default.  PAM and
+IPtables support is integrated as well.
 
-node 'control1.example.com' {
-  class { '::mcollective':
-    client            => true,
-    middleware_hosts => [ 'broker1.example.com' ],
-  }
-}
-```
+This module supports RPC authorization and auditing.  See the
+[mcollective-actionpolicy-plugin documentation](https://github.com/puppetlabs/mcollective-actionpolicy-auth) for details about creating policies.
 
-This default install will be using *no* TLS, a set of well-known usernames and
-passwords, and the psk securityprovider.  This is against the recommendataion
-of the standard deploy guide but does save you from having to deal with ssl
-certificates to begin with.
+## Setting Up A User
 
+All MCollective users must have an x509 keypair, and an RSA public key.
+The keypair can be supplied externally or generated with the SIMP FakeCA.
+See FakeCA/usergen for more details. Note that in either case, the CA must be
+added to the middleware truststore, which is done by default for FakeCA.
 
-### I'd like to secure the transport channel and authenticate users, how do I do that?
+Every user must have access to the mcollective public cert, which is auto
+generated by mco_autokey.  It resides in:
 
-Gather some credentials for the server and users.  You'll need the ca
-certificate, and a keypair for the server to use, and a keypair for each user
-to allow.
+    /etc/mcollective/ssl/mco_autokeys/mco_public.pem
 
-See the [standard deploy guide](http://docs.puppetlabs.com/mcollective/deploy/standard.html#step-1-create-and-collect-credentials)
-for more information about how to generate these.
+It is recommended every user's RSA public key be copied to:
 
+    /etc/puppet/environments/simp/keydist/mcollective
 
-```puppet
-node 'broker1.example.com' {
-  # Please see
-  # https://github.com/puppetlabs/puppetlabs-mcollective/blob/master/examples/mco_profile/manifests/middleware/activemq.pp
-  # for this as setting up activemq with a truststore can be quite complex.
-}
+This way, public key disribution is automatically managed by Puppet.
 
-node 'server1.example.com' {
-  class { '::mcollective':
-    middleware_hosts    => [ 'broker1.example.com' ],
-    middleware_ssl      => true,
-    middleware_ssl_cert => "/var/lib/puppet/ssl/certs/${::clientcert}.pem",
-    middleware_ssl_key  => "/var/lib/puppet/ssl/private_keys/${::clientcert}.pem",
-    middleware_ssl_ca   => "/var/lib/puppet/ssl/certs/ca.pem",
-    securityprovider    => 'ssl',
-    ssl_client_certs    => 'puppet:///modules/site_mcollective/client_certs',
-    ssl_ca_cert         => 'puppet:///modules/site_mcollective/certs/ca.pem',
-    ssl_server_public   => 'puppet:///modules/site_mcollective/certs/server.pem',
-    ssl_server_private  => 'puppet:///modules/site_mcollective/private_keys/server.pem',
-  }
+Every user needs a .mcollective configuration file.  This file should
+only be accessible by the mco user.
 
-  mcollective::actionpolicy { 'nrpe':
-    default => 'deny',
-  }
-
-  mcollective::actionpolicy::rule { 'vagrant user can use nrpe agent':
-    agent    => 'nrpe',
-    callerid => 'cert=vagrant',
-  }
-}
-
-node 'control.example.com' {
-  class { '::mcollective':
-    client              => true,
-    middleware_hosts    => [ 'broker1.example.com' ],
-    middleware_ssl      => true,
-    middleware_ssl_cert => "/var/lib/puppet/ssl/certs/${::clientcert}.pem",
-    middleware_ssl_key  => "/var/lib/puppet/ssl/private_keys/${::clientcert}.pem",
-    middleware_ssl_ca   => "/var/lib/puppet/ssl/certs/ca.pem",
-    securityprovider    => 'ssl',
-    ssl_client_certs    => 'puppet:///modules/site_mcollective/client_certs',
-    ssl_ca_cert         => 'puppet:///modules/site_mcollective/certs/ca.pem',
-    ssl_server_public   => 'puppet:///modules/site_mcollective/certs/server.pem',
-    ssl_server_private  => 'puppet:///modules/site_mcollective/private_keys/server.pem',
-  }
-
-  mcollective::user { 'vagrant':
-    certificate => 'puppet:///modules/site_mcollective/client_certs/vagrant.pem',
-    private_key => 'puppet:///modules/site_mcollective/private_keys/vagrant.pem',
-  }
-}
-```
-
-### The `::mcollective::` class
-
-The `mcollective` class is the main entry point to the module.  From here you
-can configure the behaviour of your mcollective install of server, client, and
-middleware.
-
-#### Parameters
-
-The following parameters are available to the mcollective class:
-
-##### `server`
-
-Boolean: defaults to true.  Whether to install the mcollective server on this
-node.
-
-##### `client`
-
-Boolean: defaults to false.  Whether to install the mcollective client
-application on this node.
-
-##### `rabbitmq_vhost`
-
-String: defaults to '/mcollective'.  The vhost to connect to/manage when using
-rabbitmq middleware.
-
-##### `manage_packages`
-
-Boolean: defaults to true.  Whether to install mcollective and mcollective-
-client packages when installing the server and client components.
-
-##### `version`
-
-String: defaults to 'present'.  What version of packages to `ensure` when
-`mcollective::manage_packages` is true.
-
-##### `ruby_stomp_ensure`
-
-String: defaults to 'installed'.  What version of the ruby-stomp package to
-`ensure` when `mcollective::manage_packages` is true. Only relevant on the
-Debian OS family.
-
-##### `main_collective`
-
-String: defaults to 'mcollective'.  The name of the main collective for this
-client/server.
-
-##### `collectives`
-
-String: defaults to 'mcollective'.  Comma seperated list of collectives this
-server should join.
-
-##### `connector`
-
-String: defaults to 'activemq'.  Name of the connector plugin to use.
-
-Currently supported are `activemq`, `rabbitmq`, and `redis`
-
-##### `securityprovider`
-
-String: defaults to 'psk'.  Name of the security provider plugin to use.
-'ssl' is recommended but requires some additional setup.
-
-##### `psk`
-
-String: defaults to 'changemeplease'.  Used by the 'psk' security provider as
-the pre-shared key to secure the collective with.
-
-##### `factsource`
-
-String: defaults to 'yaml'.  Name of the factsource plugin to use on the
-server.
-
-##### `yaml_fact_path`
-
-String: defaults to '/etc/mcollective/facts.yaml'.  Name of the file the
-'yaml' factsource plugin should load facts from.
-
-##### `classesfile`
-
-String: defaults to '/var/lib/puppet/state/classes.txt'.  Name of the file the
-server will load the configuration management class for filtering.
-
-##### `rpcauthprovider`
-
-String: defaults to 'action_policy'.  Name of the RPC Auth Provider to use on
-the server.
-
-##### `rpcauditprovider`
-
-String: defaults to 'logfile'.  Name of the RPC Audit Provider to use on the
-server.
-
-##### `registration`
-
-String: defaults to undef.  Name of the registration plugin to use on the
-server.
-
-##### `core_libdir`
-
-String: default is based on platform.  Path to the core plugins that are
-installed by the mcollective-common package.
-
-##### `site_libdir`
-
-String: default is based on platform.  Path to the site-specific plugins that
-the `mcollective::plugin` type will install with its `source` parameter.
-
-This path will be managed and purged by puppet, so don't point it at
-core_libdir or any other non-dedicated path.
-
-##### `middleware_hosts`
-
-Array of strings: defaults to [].  Where the middleware servers this
-client/server should talk to are.
-
-##### `middleware_user`
-
-String: defaults to 'mcollective'. Username to use when connecting to the
-middleware.
-
-##### `middleware_password`
-
-String: defaults to 'marionette'.  Password to use when connecting to the
-middleware.
-
-##### `middleware_port`
-
-String: defaults to '61613' (for `activemq`).  Port number to use when
-connecting to the middleware over an unencrypted connection.
-
-##### `middleware_ssl_port`
-
-String: defaults to '61614'. Port number to use when connecting to the
-middleware over a ssl connection.
-
-##### `middleware_ssl`
-
-Boolean: defaults to false.  Whether to talk to the middleware over a ssl
-protected channel.  Highly recommended.  Requires `mcollective::ssl_ca_cert`,
-`mcollective::ssl_server_public`, `mcollective::ssl_server_private` parameters
-for the server/client install.
-
-##### `middleware_admin_user`
-
-String: defaults to 'admin'.  Username for the middleware admin user.
-
-##### `middleware_admin_password`
-
-String: defaults to 'secret'.  Password to for the middleware
-admin user.
-
-##### `server_config_file`
-
-String: default is '$confdir/server.cfg'.  Path to the server
-configuration file.
-
-##### `server_logfile`
-
-String: defaults to '/var/log/mcollective.log'.  Logfile the mcollective
-server should log to.
-
-##### `server_loglevel`
-
-String: defaults to 'info'.  Level the mcollective server should log at.
-
-##### `server_daemonize`
-
-Boolean: defaults to true.  Should the mcollective server daemonize when
-started.
-
-##### `client_config_file`
-
-String: defaults to '$confdir/client.cfg'.  Path to the client
-configuration file.
-
-##### `client_logger_type`
-
-String: defaults to 'console'.  What type of logger the client should use.
-
-##### `client_loglevel`
-
-String: defaults to 'warn'.  Level the mcollective client should log at.
-
-
-##### `ssl_ca_cert`
-
-String: defaults to undef.  A file source that points to the ca certificate
-used to manage the ssl keys of the mcollective install.
-
-##### `ssl_server_public`
-
-String: defaults to undef.  A file source that points to the public key or
-certificate of the server keypair.
-
-##### `ssl_server_private`
-
-String: defaults to undef.  A file source that points to the private key of
-the server keypair.
-
-##### `ssl_client_certs`
-
-String: defaults to 'puppet:///modules/mcollective/empty'.  A file source that
-contains a directory of user certificates which are used by the ssl security
-provider in authenticating user requests.
-
-### `mcollective::user` defined type
-
-`mcollective::user` installs a client configuration and any needed client
-certificates in a users home directory.
-
-#### Parameters
-
-##### `username`
-
-String: defaults to $name. The username of the user to install for.
-
-##### `group`
-
-String: defaults to $name. The group of the user to install for.
-
-##### `homedir`
-
-String: defaults to "/home/${name}".  The home directory of the user to
-install for.
-
-##### `certificate`
-
-String: defaults to undef.  A file source for the certificate of the user.
-Used by the 'ssl' securityprovider to set the identity of the user.
-
-##### `private_key`
-
-String: defaults to undef.  A file source for the private key of the user.
-Used when `mcollective::middleware_ssl` is true to connect to the middleware
-and by the 'ssl' securityprovider to sign messages as from this user.
-
-### `mcollective::plugin` defined type
-
-`mcollective::plugin` installs a plugin from a source uri or a package.  When
-installing from a source uri the plugin will be copied to
-`mcollective::site_libdir`
-
-```puppet
-mcollective::plugin { 'puppet':
-  package => true,
-}
-```
-
-When installing a plugin from source you need to create the correct directory
-structure for it to work.
-
-For example if you wish to sync an agent for apt which ships with ``apt.ddl``
-and ``apt.rb`` you need to create the following structure:
-
-```
-site_mcollective/files/plugins/apt/
-                               └── mcollective
-                                   └── agent
-                                       ├── apt.ddl
-                                       └── apt.rb
-```
-
-Now you can then point the ``source`` attribute of the defined type to the
-apt folder in your plugins directory.
-
-```puppet
-mcollective::plugin { 'apt':
-  source => 'puppet:///modules/site_mcollective/plugins/apt',
-}
-```
-
-For more examples have a look at the directory structure in ``files/plugins``
-of this module.
-
-#### Parameters
-
-##### `name`
-
-String: the resource title.  The base name of the plugin to install.
-
-##### `source`
-
-String: will default to "puppet:///modules/mcollective/plugins/${name}".  The
-source uri that will be copied to `mcollective::site_libdir`
-
-##### `package`
-
-Boolean: defaults to false.  Whether to install the plugin from a file copy or
-a package install.
-
-##### `type`
-
-String: defaults to 'agent'.  The type of the plugin package to install.
-
-##### `has_client`
-
-Boolean: defaults to true.  When installing from a package, whether to attempt
-to install `mcollective-${name}-client` on the client node.
-
-### `mcollective::actionpolicy` defined type
-
-`mcollective::actionpolicy` configures an agent for use with actionpolicy in
-conjunction with `mcollective::actionpolicy::rule`.
-
-#### Parameters
-
-##### `name`
-
-String: the resource title.  The name of the agent to set up an actionpolicy
-for.
-
-##### `default`
-
-String: defaults to 'deny'.  The default actionpolicy to apply to the agent.
-
-### `mcollective::actionpolicy::rule` defined type
-
-`mcollective::actionpolicy::rule` represents a single actionpolicy policy
-entry. See the actionpolicy plugin [Policy File Format](https://github.com/puppetlabs/mcollective-actionpolicy-auth#policy-file-format)
-for specific restrictions on the values of these fields.
-
-#### Parameters
-
-##### `name`
-
-String: the resource title.  A descriptive name for the rule you are adding.
-
-##### `agent`
-
-String: required, no default.  The name of the agent you are adding a rule
-for.
-
-##### `action`
-
-String: defaults to 'allow'.  What to do when the other conditions of this
-line are matched.
-
-##### `callerid`
-
-String: defaults to '*'.  What callerids should match this rule.
-
-##### `actions`
-
-String: defaults to '*'.  What actions should match this rule.
-
-##### `fact_filter`
-
-String: defaults to '*'.  What facts should match this rule. This can be either
-'*', a space-separated list of ``fact=value`` pairs (which match if every listed
-fact matches), or any valid [compound filter string](http://docs.puppetlabs.com/mcollective/reference/basic/basic_cli_usage.html#complex-compound-or-select-queries). This matches the "facts" field of the policy file lines.
-
-##### `classes`
-
-String: defaults to '*'.  What classes should match this rule.
-
-### `mcollective::common::setting` defined type
-
-`mcollective::common::setting` declares a setting that is common between
-server and client.
-
-#### Parameters
-
-##### `setting`
-
-String: defaults to the resource title.  The name of the setting to set.
-
-##### `value`
-
-String: no default.  The value to set.
-
-##### `order`
-
-String: default '10'.  The order in which to merge this setting.
-
-### `mcollective::server::setting` defined type
-
-`mcollective::server::setting` declares a setting that is exclusive to a server.
-
-#### Parameters
-
-##### `setting`
-
-String: defaults to the resource title.  The name of the setting to set.
-
-##### `value`
-
-String: no default.  The value to set.
-
-##### `order`
-
-String: default '30'.  The order in which to merge this setting.
-
-### `mcollective::client::setting` defined type
-
-`mcollective::client::setting` declares a setting that is common to clients
-and users.
-
-#### Parameters
-
-##### `setting`
-
-String: defaults to the resource title.  The name of the setting to set.
-
-##### `value`
-
-String: no default.  The value to set.
-
-##### `order`
-
-String: default '30'.  The order in which to merge this setting.
-
-### `mcollective::user::setting` defined type
-
-`mcollective::user::setting` declares a setting that is specific to a user.
-
-#### Parameters
-
-##### `username`
-
-String: required, no default.  Which user to set this value for.
-
-##### `setting`
-
-String: required, no default. The name of the setting to set.
-
-##### `value`
-
-String: no default.  The value to set.
-
-##### `order`
-
-String: default '70'.  The order in which to merge this setting.
-
-### `mcollective::server::config::factsource::yaml` private class
-
-`mcollective::server::config::factsource::yaml` is the class that implements cron-based fact generation and configures MCollective to use it. It is a private class and so may not be declared directly, but rather is invoked when the `mcollective` class is declared with the `factsource` parameter set to `yaml` (the default). Although `mcollective::server::config::factsource::yaml` is private it does have one parameter which can be tuned using data bindings (e.g. Hiera).
-
-#### Parameters
-
-##### `path`
-
-String: default $::path. What PATH environment variable to use when refresh-mcollective-metadata is invoked by cron.
-
-## Reference
-
-### Configuration merging
-
-The configuration of the server and client are built up from the various calls
-to `mcollective::common::setting`, `mcollective::server::setting`,
-`mcollective::client::setting`, and `mcollective::user::setting`.
-
-Settings for the server will be a merge of `mcollective::common::setting` and
-`mcollective::server::setting`, highest order of the setting wins.
-
-Settings for the client will be a merge of `mcollective::common::setting`,
-and `mcollective::client::setting`, highest order of the setting wins.
-
-Settings for a specific user will be a merge of
-`mcollective::common::setting`, `mcollective::client::setting` and
-`mcollective::user::setting` for that specific user, highest order of setting
-wins.
-
-#### Overriding existing options
-
-You can override an existing server setting from outside of the module by
-simply specifying that setting again with a higher order than the default of
-that type, for example to make a server's loglevel be debug (without simply
-setting mcollective::server_loglevel) you could write:
-
-```puppet
-mcollective::server::setting { 'override loglevel':
-  setting => 'loglevel',
-  value   => 'debug',
-  order   => '50',
-}
-```
-
-## Troubleshooting
-
-### Why do I have no client.cfg?
-
-I said to install the client, so why when I run `mco ping` am I seeing this:
-
-```shell
-$ mco ping
-Failed to generate application list: RuntimeError: Cannot find config file '/etc/mcollective/client.cfg'
-```
-
-You've enabled the ssl security provider, which implies each user will have
-their own ssl credentials to use in the collective.  In order to avoid
-incomplete configuration of clients in this mode we delete the system-wide
-/etc/mcollective/client.cfg and only generate user configuration files with
-the `mcollective::user` definition.
-
-## Limitations
-
-This module has been built on and tested against Puppet 3.0 and higher.
-
-The module has been tested on:
-
-* CentOS 6
-* Ubuntu 12.04
-
-Testing on other platforms has been light and cannot be guaranteed.
-
-## Development
-
-Puppet Community modules on are open projects, and community contributions are
-essential for keeping them great. We can’t access the huge number of platforms
-and myriad of hardware, software, and deployment configurations that Puppet is
-intended to serve.
-
-We want to keep it as easy as possible to contribute changes so that our
-modules work in your environment. There are a few guidelines that we need
-contributors to follow so that we can have a chance of keeping on top of things.
-
-You can read the complete module contribution guide [on the Puppet Labs wiki.](http://projects.puppetlabs.com/projects/module-site/wiki/Module_contributing)
-
-Current build status is: [![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-mcollective.png)](https://travis-ci.org/puppetlabs/puppetlabs-mcollective)
-
+    collectives = mcollective
+    connector = activemq
+    direct_addressing = 1
+    libdir = /usr/local/libexec/mcollective:/usr/libexec/mcollective
+    logger_type = console
+    loglevel = warn
+    main_collective = mcollective
+    plugin.activemq.base64 = yes
+    plugin.activemq.pool.1.host = <middleware.host.fqdn>
+    plugin.activemq.pool.1.password = <foobarbaz>
+    plugin.activemq.pool.1.port = 61614
+    plugin.activemq.pool.1.ssl = 1
+    plugin.activemq.pool.1.ssl.ca = /etc/pki/cacerts/cacerts.pem     (default CA)
+    plugin.activemq.pool.1.ssl.cert = </home/mco_user/mco_user.pub>  (x509 user cert)
+    plugin.activemq.pool.1.ssl.fallback = 0
+    plugin.activemq.pool.1.ssl.key = </home/mco_user/mco_user.pem>   (x509 user key)
+    plugin.activemq.pool.1.user = mcollective
+    plugin.activemq.pool.size = 1
+    plugin.activemq.randomize = true
+    plugin.ssl_client_private = </home/mco_user/mco_user.pem>        (x509 user key) 
+    plugin.ssl_client_public = </home/mco_user/mco_user_rsa.pem>     (RSA user cert)
+    plugin.ssl_server_public = </home/mco_user/mco_public.pem>       (auto-generated mco public key)
+    securityprovider = ssl
