@@ -52,7 +52,7 @@ mkdir -p %{buildroot}/%{prefix}/mcollective
 # Post uninstall stuff
 
 %changelog
-* Mon Jan 18 2015 Nick Markowski <nmarkowski@keywcorp.com> - 2.3.1-0
+* Tue Jan 19 2016 Nick Markowski <nmarkowski@keywcorp.com> - 2.3.1-0
 - Module forked from voxpupuli/puppet-mcollective
   (https://github.com/voxpupuli/puppet-mcollective)
 - Added in mco_autokey generation.
