@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a6ff13c_509a3915",
+        "filename": "build/pupmod-mcollective.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-03-14T15:55:58Z",
+      "side": 1,
+      "message": "Woops. My mistake...",
+      "range": {
+        "startLine": 55,
+        "startChar": 13,
+        "endLine": 55,
+        "endChar": 17
+      },
+      "revId": "4492d31ee5df974a018dc1fecd7025006e63283c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
