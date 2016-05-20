@@ -48,6 +48,7 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0444',
+      # FIXME: see below
       source => $::mcollective::middleware_ssl_ca_real,
     }
 
@@ -55,6 +56,8 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0400',
+      # FIXME: this was my best guess looking at the 2.1.3-era upstream tests,
+      #        but ithe specs still barf hard with `STRICT_VARIABLES=yes.`
       source => $::mcollective::middleware_ssl_key_real,
     }
 
@@ -62,6 +65,7 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0444',
+      # FIXME: see above
       source => $::mcollective::middleware_ssl_cert_real,
     }
 
