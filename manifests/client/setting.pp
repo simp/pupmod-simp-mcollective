@@ -4,7 +4,7 @@ define mcollective::client::setting (
   $setting = $name,
   $order   = '30',
 ) {
-  mcollective::setting { "mcollective::client::setting ${title}":
+  ::mcollective::setting { "mcollective::client::setting ${title}":
     setting => $setting,
     value   => $value,
     target  => [ 'mcollective::client', 'mcollective::user' ],

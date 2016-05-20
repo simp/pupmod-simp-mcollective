@@ -9,22 +9,27 @@ define mcollective::user::connector(
 ) {
   $i = regsubst($title, "^${username}_", '')
 
+  if !defined('::mcollective') {
+    fail('You must include `::mcollective` before calling `mcollective::common::config::connector::activemq::hosts_iteration`')
+  }
+
+
   if $middleware_ssl {
-    mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.ca":
+    ::mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.ca":
       setting  => "plugin.${connector}.pool.${i}.ssl.ca",
       username => $username,
       order    => $order,
       value    => "${homedir}/.mcollective.d/credentials/certs/ca.pem",
     }
 
-    mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.cert":
+    ::mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.cert":
       setting  => "plugin.${connector}.pool.${i}.ssl.cert",
       username => $username,
       order    => $order,
       value    => "${homedir}/.mcollective.d/credentials/certs/${callerid}.pem",
     }
 
-    mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.key":
+    ::mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.key":
       setting  => "plugin.${connector}.pool.${i}.ssl.key",
       username => $username,
       order    => $order,

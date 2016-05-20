@@ -10,13 +10,18 @@ define mcollective::user(
   # duplication of $ssl_ca_cert, $ssl_server_public, $connector,
   # $middleware_ssl, $middleware_hosts, and $securityprovider parameters to
   # allow for spec testing.  These are otherwise considered private.
-  $ssl_ca_cert = $mcollective::ssl_ca_cert,
-  $ssl_server_public = $mcollective::ssl_server_public,
-  $middleware_hosts = $mcollective::middleware_hosts,
-  $middleware_ssl = $mcollective::middleware_ssl,
-  $securityprovider = $mcollective::securityprovider,
-  $connector = $mcollective::connector,
+  $ssl_ca_cert = $::mcollective::ssl_ca_cert,
+  $ssl_server_public = $::mcollective::ssl_server_public,
+  $middleware_hosts = $::mcollective::middleware_hosts,
+  $middleware_ssl = $::mcollective::middleware_ssl,
+  $securityprovider = $::mcollective::securityprovider,
+  $connector = $::mcollective::connector,
 ) {
+
+  if !defined('::mcollective') {
+    fail('You must include `::mcollective` prior to using `::mcollective::user`')
+  }
+
   file { [
     "${homedir}/.mcollective.d",
     "${homedir}/.mcollective.d/credentials",
@@ -69,21 +74,21 @@ define mcollective::user(
       mode   => '0444',
     }
 
-    mcollective::user::setting { "${username}:plugin.ssl_client_public":
+    ::mcollective::user::setting { "${username}:plugin.ssl_client_public":
       setting  => 'plugin.ssl_client_public',
       username => $username,
       value    => "${homedir}/.mcollective.d/credentials/certs/${callerid}.pem",
       order    => '60',
     }
 
-    mcollective::user::setting { "${username}:plugin.ssl_client_private":
+    ::mcollective::user::setting { "${username}:plugin.ssl_client_private":
       setting  => 'plugin.ssl_client_private',
       username => $username,
       value    => "${homedir}/.mcollective.d/credentials/private_keys/${callerid}.pem",
       order    => '60',
     }
 
-    mcollective::user::setting { "${username}:plugin.ssl_server_public":
+    ::mcollective::user::setting { "${username}:plugin.ssl_server_public":
       setting  => 'plugin.ssl_server_public',
       username => $username,
       value    => "${homedir}/.mcollective.d/credentials/certs/server_public.pem",
@@ -96,7 +101,7 @@ define mcollective::user(
     $pool_size = size(flatten([$middleware_hosts]))
     $hosts = range( '1', $pool_size )
     $connectors = prefix( $hosts, "${username}_" )
-    mcollective::user::connector { $connectors:
+    ::mcollective::user::connector { $connectors:
       username       => $username,
       callerid       => $callerid,
       homedir        => $homedir,

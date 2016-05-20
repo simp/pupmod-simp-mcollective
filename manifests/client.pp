@@ -2,12 +2,10 @@
 # Installs the client and sets up /etc/mcollective/client.cfg (global/common
 # configuration)
 class mcollective::client {
-  if $caller_module_name != $module_name {
-    fail("Use of private class ${name} by ${caller_module_name}")
-  }
+  assert_private()
 
-  contain mcollective::client::install
-  contain mcollective::client::config
+  contain ::mcollective::client::install
+  contain ::mcollective::client::config
 
   Class['mcollective::client::install'] ->
   Class['mcollective::client::config']

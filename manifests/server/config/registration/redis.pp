@@ -1,16 +1,14 @@
 #
 class mcollective::server::config::registration::redis {
-  if $caller_module_name != $module_name {
-    fail("Use of private class ${name} by ${caller_module_name}")
-  }
+  assert_private()
 
-  mcollective::server::setting { 'registerinterval':
+  ::mcollective::server::setting { 'registerinterval':
     value => 10,
   }
 
-  mcollective::server::setting { 'registration':
+  ::mcollective::server::setting { 'registration':
     value => 'redis',
   }
 
-  mcollective::plugin { 'registration/redis': }
+  ::mcollective::plugin { 'registration/redis': }
 }

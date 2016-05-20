@@ -1,10 +1,8 @@
 #
 class mcollective::common::config {
-  if $caller_module_name != $module_name {
-    fail("Use of private class ${name} by ${caller_module_name}")
-  }
+  assert_private()
 
-  file { $mcollective::site_libdir:
+  file { $::mcollective::site_libdir:
     ensure       => directory,
     owner        => 'root',
     group        => '0',
@@ -16,14 +14,14 @@ class mcollective::common::config {
     sourceselect => 'all',
   }
 
-  if $mcollective::server {
+  if $::mcollective::server {
     # if we have a server install, reload when the plugins change
-    File[$mcollective::site_libdir] ~> Class['mcollective::server::service']
+    File[$::mcollective::site_libdir] ~> Class['mcollective::server::service']
   }
 
   datacat_collector { 'mcollective::site_libdir':
-    before          => File[$mcollective::site_libdir],
-    target_resource => File[$mcollective::site_libdir],
+    before          => File[$::mcollective::site_libdir],
+    target_resource => File[$::mcollective::site_libdir],
     target_field    => 'source',
     source_key      => 'source_path',
   }
@@ -35,34 +33,34 @@ class mcollective::common::config {
     },
   }
 
-  mcollective::common::setting { 'libdir':
-    value => "${mcollective::site_libdir}:${mcollective::core_libdir}",
+  ::mcollective::common::setting { 'libdir':
+    value => "${::mcollective::site_libdir}:${::mcollective::core_libdir}",
   }
 
-  mcollective::common::setting { 'connector':
-    value => $mcollective::connector,
+  ::mcollective::common::setting { 'connector':
+    value => $::mcollective::connector,
   }
 
-  mcollective::common::setting { 'securityprovider':
-    value => $mcollective::securityprovider,
+  ::mcollective::common::setting { 'securityprovider':
+    value => $::mcollective::securityprovider,
   }
 
-  mcollective::common::setting { 'collectives':
-    value => join(flatten([$mcollective::collectives]), ','),
+  ::mcollective::common::setting { 'collectives':
+    value => join(flatten([$::mcollective::collectives]), ','),
   }
 
-  mcollective::common::setting { 'main_collective':
-    value => $mcollective::main_collective,
+  ::mcollective::common::setting { 'main_collective':
+    value => $::mcollective::main_collective,
   }
 
-  mcollective::common::setting { 'identity':
-    value => $mcollective::identity,
+  ::mcollective::common::setting { 'identity':
+    value => $::mcollective::identity,
   }
 
 
-  mcollective::soft_include { [
-    "::mcollective::common::config::connector::${mcollective::connector}",
-    "::mcollective::common::config::securityprovider::${mcollective::securityprovider}",
+  ::mcollective::soft_include { [
+    "::mcollective::common::config::connector::${::mcollective::connector}",
+    "::mcollective::common::config::securityprovider::${::mcollective::securityprovider}",
   ]:
     start => Anchor['mcollective::common::config::begin'],
     end   => Anchor['mcollective::common::config::end'],

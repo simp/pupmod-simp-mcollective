@@ -10,7 +10,7 @@ class mcollective (
   $ruby_stomp_ensure = 'installed',
 
   # core configuration
-  $confdir          = $mcollective::defaults::confdir,
+  $confdir          = $::mcollective::defaults::confdir,
   $main_collective  = 'mcollective',
   $collectives      = 'mcollective',
   $connector        = 'activemq',
@@ -23,9 +23,9 @@ class mcollective (
   $rpcauthprovider  = 'action_policy',
   $rpcauditprovider = 'logfile',
   $registration     = undef,
-  $core_libdir      = $mcollective::defaults::core_libdir,
-  $site_libdir      = $mcollective::defaults::site_libdir,
-  $identity         = $fqdn,
+  $core_libdir      = $::mcollective::defaults::core_libdir,
+  $site_libdir      = $::mcollective::defaults::site_libdir,
+  $identity         = $::fqdn,
 
   # networking
   $middleware_hosts          = [],
@@ -49,7 +49,7 @@ class mcollective (
   $server_config_file = undef, # default dependent on $confdir
   $server_logfile     = '/var/log/mcollective.log',
   $server_loglevel    = 'info',
-  $server_daemonize   = $mcollective::defaults::server_daemonize,
+  $server_daemonize   = $::mcollective::defaults::server_daemonize,
   $service_name       = 'mcollective',
   $server_package     = 'mcollective',
   $ruby_stomp_package = 'ruby-stomp',
@@ -70,7 +70,7 @@ class mcollective (
 
   # Action policy settings
   $allowunconfigured    = '1',
-) inherits mcollective::defaults {
+) inherits ::mcollective::defaults {
 
   # Because the correct default value for several parameters is based on another
   # configurable parameter, it cannot be set in the parameter defaults above and
@@ -94,12 +94,12 @@ class mcollective (
   $middleware_ssl_ca_path   = "${ssldir}/middleware_ca.pem"
 
   if $client or $server {
-    contain mcollective::common
+    contain ::mcollective::common
   }
   if $client {
-    contain mcollective::client
+    contain ::mcollective::client
   }
   if $server {
-    contain mcollective::server
+    contain ::mcollective::server
   }
 }
