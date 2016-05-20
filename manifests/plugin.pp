@@ -6,8 +6,8 @@ define mcollective::plugin(
   $has_client = true,
   # $client and $server are to allow for unit testing, and are considered private
   # parameters
-  $client = $mcollective::client,
-  $server = $mcollective::server,
+  $client    = defined('$::mcollective::client') and is_bool(getvar('::mcollective::client')) ? { true => getvar('::mcollective::client'), default => false },
+  $server    = defined('$::mcollective::server') and is_bool(getvar('::mcollective::server')) ? { true => getvar('::mcollective::server'), default => false },
   $package_ensure = 'present',
 ) {
   if $package {
