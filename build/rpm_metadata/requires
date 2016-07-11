@@ -1,0 +1,2 @@
+Requires: puppetlabs-java_ks >= 1.4.0
+Requires: pupmod-richardc-datacat >= 0.6.1
