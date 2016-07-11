@@ -1,6 +1,6 @@
 {
-  "name": "pupmod-simp-mcollective",
-  "version": "2.1.3",
+  "name": "simp-mcollective",
+  "version": "2.1.4",
   "author": ["puppetcommunity", "simp"],
   "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster.",
   "license": "Apache-2.0",
