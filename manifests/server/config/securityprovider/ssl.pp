@@ -18,22 +18,22 @@ class mcollective::server::config::securityprovider::ssl {
     value => $mcollective::ssl_client_certs_dir_real,
   }
 
-  if $mcollective::ssl_mco_autokeys {
+  if $::mcollective::ssl_mco_autokeys {
     mcollective::server::setting { 'plugin.ssl_server_public':
-      value => "${mcollective::confdir}/ssl/mco_autokeys/mco_public.pem",
+      value => "${::mcollective::confdir}/ssl/mco_autokeys/mco_public.pem"
     }
 
     mcollective::server::setting { 'plugin.ssl_server_private':
-      value => "${mcollective::confdir}/ssl/mco_autokeys/mco_private.pem",
+      value => "${::mcollective::confdir}/ssl/mco_autokeys/mco_private.pem"
     }
   }
   else {
     mcollective::server::setting { 'plugin.ssl_server_public':
-      value => "${mcollective::confdir}/ssl/server_public.pem",
+      value => $::mcollective::ssl_server_public_path,
     }
 
     mcollective::server::setting { 'plugin.ssl_server_private':
-      value => "${mcollective::confdir}/ssl/server_private.pem",
+      value => $::mcollective::ssl_server_private_path,
     }
   }
 }

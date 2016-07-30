@@ -1,11 +1,22 @@
 require 'spec_helper'
 
-describe 'mcollective::actionpolicy::rule', :type => :define do
+describe 'mcollective::actionpolicy::rule', type: :define do
+  let :facts do
+    {
+      puppetversion: Puppet.version,
+      facterversion: Facter.version,
+      macaddress: '00:00:00:26:28:8a',
+      osfamily: 'RedHat',
+      operatingsystem: 'CentOS',
+      mco_version: '2.8.4',
+      path: ['/usr/bin', '/usr/sbin'],
+    }
+  end
   context 'default-puppet' do
     let(:title) { 'default-puppet' }
     let(:params) do
       {
-        :agent => 'puppet',
+        agent: 'puppet',
       }
     end
 
@@ -13,14 +24,14 @@ describe 'mcollective::actionpolicy::rule', :type => :define do
       should contain_datacat_fragment('mcollective::actionpolicy::rule default-puppet') \
         .with_target('mcollective::actionpolicy puppet') \
         .with_data('lines' => [
-          {
-            'action'   => 'allow',
-            'callerid' => '*',
-            'actions'  => '*',
-            'facts'    => '*',
-            'classes'  => '*',
-          },
-        ],)
+                     {
+                       'action'   => 'allow',
+                       'callerid' => '*',
+                       'actions'  => '*',
+                       'facts'    => '*',
+                       'classes'  => '*',
+                     },
+                   ],)
     end
   end
 
@@ -28,8 +39,8 @@ describe 'mcollective::actionpolicy::rule', :type => :define do
     let(:title) { 'default-puppet' }
     let(:params) do
       {
-        :agent       => 'puppet',
-        :fact_filter => 'environment=dev and !customer=acme',
+        agent: 'puppet',
+        fact_filter: 'environment=dev and !customer=acme',
       }
     end
 
@@ -37,14 +48,14 @@ describe 'mcollective::actionpolicy::rule', :type => :define do
       should contain_datacat_fragment('mcollective::actionpolicy::rule default-puppet') \
         .with_target('mcollective::actionpolicy puppet') \
         .with_data('lines' => [
-          {
-            'action'   => 'allow',
-            'callerid' => '*',
-            'actions'  => '*',
-            'facts'    => 'environment=dev and !customer=acme',
-            'classes'  => '*',
-          },
-        ],)
+                     {
+                       'action'   => 'allow',
+                       'callerid' => '*',
+                       'actions'  => '*',
+                       'facts'    => 'environment=dev and !customer=acme',
+                       'classes'  => '*',
+                     },
+                   ],)
     end
   end
 end
