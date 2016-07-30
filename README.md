@@ -1,4 +1,9 @@
-# mcollective [![Build Status](https://travis-ci.org/puppet-community/puppet-mcollective.svg?branch=master)](https://travis-ci.org/puppet-community/puppet-mcollective)
+# mcollective
+
+[![Puppet Forge](http://img.shields.io/puppetforge/v/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Puppet Forge downloads](https://img.shields.io/puppetforge/dt/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Puppet Forge score](https://img.shields.io/puppetforge/f/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Build Status](https://travis-ci.org/voxpupuli/puppet-mcollective.png)](https://travis-ci.org/voxpupuli/puppet-mcollective)
 
 #### Table of Contents
 
@@ -199,6 +204,18 @@ client packages when installing the server and client components.
 String: defaults to 'present'.  What version of packages to `ensure` when
 `mcollective::manage_packages` is true.
 
+##### `client_package`
+
+String: defaults to 'mcollective-client'. The name of the package to install for
+the client part. In the case that there is only one package package handling both,
+client and server, give the same name for 'client_package' and 'server_package'.
+
+##### `server_package`
+
+String: defaults to 'mcollective'. The name of the package to install for
+the server. In the case that there is only one package package handling both,
+client and server, give the same name for 'client_package' and 'server_package'.
+
 ##### `ruby_stomp_ensure`
 
 String: defaults to 'installed'.  What version of the ruby-stomp package to
@@ -240,6 +257,13 @@ server.
 
 String: defaults to '/etc/mcollective/facts.yaml'.  Name of the file the
 'yaml' factsource plugin should load facts from.
+
+##### `ruby_interpreter`
+
+String: defaults to '/usr/bin/env ruby' for non PE installations, and to
+'/opt/puppet/bin/ruby' for PE installations. With `factsource` 'yaml', a ruby
+script is installed as cron job, which needs to find the ruby interpreter.
+This parameter allows overriding the default interpreter.
 
 ##### `classesfile`
 

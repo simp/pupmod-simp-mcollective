@@ -9,7 +9,7 @@ The SIMP MCollective module is an extension of
 [voxpupuli/puppet-mcollective](https://github.com/voxpupuli/puppet-mcollective).
 Like voxpupuli's module, this module conforms to the
 [mcollective standard deploymet guide](http://docs.puppetlabs.com/mcollective/deploy/standard.html),
-where appropriate.  This module is most effectively used in conjunction with the
+where appropriate. This module is most effectively used in conjunction with the
 [simp::mcollective stock class](https://github.com/simp/pupmod-simp-simp/blob/master/manifests/mcollective.pp).
 
 ## Setup
@@ -24,28 +24,11 @@ will include the server and middleware components.
 
 If you want a node to be a client as well, set:
 
-    mcollective::client: true
+    simp::mcollective::client: true
 
 Disabling the server component follows suit:
 
-    mcollective::server: false
-
-A host of other variables must be set which cannot have reasonable defaults:
-
-    activemq::mq_admin_password : '<foobarbaz>'
-    activemq::mq_cluster_password : '<foobarbaz>'
-    activemq::manage_config : false
-    simp::mcollective::truststore_certificate : '/etc/pki/cacerts/cacerts.pem'
-    simp::mcollective::keystore_password : '<foobarbaz>'
-    simp::mcollective::truststore_password : '<foobarbaz>'
-    mcollective::middleware_admin_password : '<foobarbaz>'
-    mcollective::middleware_password : '<foobarbaz>'
-    mcollective::middleware_hosts :
-      - '<middleware.host.fqdn>'
-
-All remaining variables have reasonable defaults, and are set in:
-
-    ../hieradata/simp/mcollective/default.yaml
+    simp::mcollective::server: false
 
 ## Security
 

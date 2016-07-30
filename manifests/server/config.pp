@@ -42,7 +42,35 @@ class mcollective::server::config {
     mode   => '0755',
   }
 
-  if $::mcollective::middleware_ssl or $mcollective::securityprovider == 'ssl' {
+  if ($::mcollective::middleware_ssl or ( $::mcollective::securityprovider == 'ssl' )) and $::mcollective::ssl_mco_autokeys {
+
+    file { "${mcollective::confdir}/ssl/mco_autokeys":
+      ensure => 'directory',
+      mode   => '0750',
+      owner  => 'root',
+      group  => 'puppet'
+    }
+
+    file { 'mco_priv_key':
+      path    => "${mcollective::confdir}/ssl/mco_autokeys/mco_private.pem",
+      content => mco_autokey('2048', true),
+      mode    => '0400',
+      owner   => 'root',
+      group   => 'puppet',
+      require => File["${mcollective::confdir}/ssl/mco_autokeys"]
+    }
+
+    file { 'mco_pub_key':
+      path    => "${mcollective::confdir}/ssl/mco_autokeys/mco_public.pem",
+      content => mco_autokey('2048'),
+      mode    => '0400',
+      owner   => 'root',
+      group   => 'puppet',
+      require => File['mco_priv_key']
+    }
+  }
+
+  if $::mcollective::middleware_ssl {
 
     file { $::mcollective::middleware_ssl_ca_path:
       owner  => 'root',
@@ -65,46 +93,24 @@ class mcollective::server::config {
       source => $::mcollective::middleware_ssl_cert_real,
     }
 
-    if $mcollective::ssl_mco_autokeys {
+  }
 
-      file { "${mcollective::confdir}/ssl/mco_autokeys":
-        ensure => directory,
-        mode   => '0750',
-        owner  => 'root',
-        group  => 'puppet'
-      }
-      file { 'mco_priv_key':
-        path    => "${mcollective::confdir}/ssl/mco_autokeys/mco_private.pem",
-        content => mco_autokey('2048', true),
-        mode    => '0400',
-        owner   => 'root',
-        group   => 'puppet',
-        require => File['/etc/mcollective/ssl/mco_autokeys']
-      }
-      file { 'mco_pub_key':
-        path    => "${mcollective::confdir}/ssl/mco_autokeys/mco_public.pem",
-        content => mco_autokey('2048'),
-        mode    => '0400',
-        owner   => 'root',
-        group   => 'puppet',
-        require => File['mco_priv_key'],
-      }
-    }
-    else {
-      file { "${mcollective::confdir}/ssl/server_public.pem":
-        owner  => 'root',
-        group  => '0',
-        mode   => '0444',
-        source => $mcollective::ssl_mco_public,
-      }
+  if $::mcollective::securityprovider == 'ssl' {
 
-      file { "${mcollective::confdir}/ssl/server_private.pem":
-        owner  => 'root',
-        group  => '0',
-        mode   => '0400',
-        source => $mcollective::ssl_mco_private
-      }
+    file { $::mcollective::ssl_server_public_path:
+      owner  => 'root',
+      group  => '0',
+      mode   => '0444',
+      source => $::mcollective::ssl_server_public,
     }
+
+    file { $::mcollective::ssl_server_private_path:
+      owner  => 'root',
+      group  => '0',
+      mode   => '0400',
+      source => $::mcollective::ssl_server_private,
+    }
+
   }
 
   mcollective::soft_include { [
