@@ -19,6 +19,7 @@ class mcollective (
   $factsource       = 'yaml',
   $yaml_fact_path   = undef,
   $yaml_fact_cron   = true,
+  $fact_cron_splay  = false,
   $classesfile      = '/var/lib/puppet/state/classes.txt',
   $rpcauthprovider  = 'action_policy',
   $rpcauditprovider = 'logfile',
@@ -45,14 +46,20 @@ class mcollective (
   # middleware connector tweaking
   $rabbitmq_vhost = '/mcollective',
 
+  # common
+  $common_package = 'mcollective-common',
+
   # server-specific
   $server_config_file = undef, # default dependent on $confdir
   $server_logfile     = '/var/log/mcollective.log',
   $server_loglevel    = 'info',
   $server_daemonize   = $mcollective::defaults::server_daemonize,
   $service_name       = 'mcollective',
+  $service_ensure     = 'running',
+  $service_enable     = true,
   $server_package     = 'mcollective',
   $ruby_stomp_package = 'ruby-stomp',
+  $ruby_interpreter   = $mcollective::defaults::ruby_interpreter,
 
   # client-specific
   $client_config_file  = undef, # default dependent on $confdir
@@ -65,8 +72,11 @@ class mcollective (
   $ssl_server_public    = undef,
   $ssl_server_private   = undef,
   $ssl_client_certs     = 'puppet:///modules/mcollective/empty',
-  $ssl_client_certs_dir = undef, # default dependent on $confdir,
+  $ssl_client_certs_dir = undef, # default dependent on $confdir
   $ssl_mco_autokeys     = false,
+
+  # ssl ciphers
+  $ssl_ciphers = undef,
 
   # Action policy settings
   $allowunconfigured    = '1',
@@ -75,13 +85,13 @@ class mcollective (
   # Because the correct default value for several parameters is based on another
   # configurable parameter, it cannot be set in the parameter defaults above and
   # _real variables must be set here.
-  $yaml_fact_path_real = pick($yaml_fact_path, "${confdir}/facts.yaml")
-  $server_config_file_real = pick($server_config_file, "${confdir}/server.cfg")
-  $client_config_file_real = pick($client_config_file, "${confdir}/client.cfg")
+  $yaml_fact_path_real = pick_default($yaml_fact_path, "${confdir}/facts.yaml")
+  $server_config_file_real = pick_default($server_config_file, "${confdir}/server.cfg")
+  $client_config_file_real = pick_default($client_config_file, "${confdir}/client.cfg")
 
   $ssldir = "${confdir}/ssl"
 
-  $ssl_client_certs_dir_real = pick($ssl_client_certs_dir, "${ssldir}/clients")
+  $ssl_client_certs_dir_real = pick_default($ssl_client_certs_dir, "${ssldir}/clients")
   $ssl_server_public_path    = "${ssldir}/server_public.pem"
   $ssl_server_private_path   = "${ssldir}/server_private.pem"
 

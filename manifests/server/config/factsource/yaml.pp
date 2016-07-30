@@ -7,12 +7,20 @@ class mcollective::server::config::factsource::yaml (
   }
 
   $yaml_fact_path_real = $mcollective::yaml_fact_path_real
-  if defined('$is_pe') and str2bool($::is_pe) {
-    $ruby_shebang_path = '/opt/puppet/bin/ruby'
-  } else {
-    $ruby_shebang_path = '/usr/bin/env ruby'
-  }
+  $ruby_shebang_path   = $mcollective::ruby_interpreter
   $yaml_fact_cron      = $mcollective::yaml_fact_cron
+
+  if $mcollective::fact_cron_splay {
+    $cron_minute_offset  = fqdn_rand(15, $::macaddress)
+    $cron_minutes        = [
+                            $cron_minute_offset,
+                            $cron_minute_offset + 15,
+                            $cron_minute_offset + 30,
+                            $cron_minute_offset + 45,
+                          ]
+  } else {
+    $cron_minutes = [ '0', '15', '30', '45' ]
+  }
 
   # Template uses:
   #   - $ruby_shebang_path
@@ -20,14 +28,14 @@ class mcollective::server::config::factsource::yaml (
   if $yaml_fact_cron {
     if versioncmp($::facterversion, '3.0.0') >= 0 {
       cron { 'refresh-mcollective-metadata':
-        command     => "facter --yaml >${yaml_fact_path_real} 2>&1",
+        command     => "facter -p --yaml >${yaml_fact_path_real} 2>&1",
         environment => 'PATH=/opt/puppet/bin:/opt/puppetlabs/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
         user        => 'root',
-        minute      => [ '0', '15', '30', '45' ],
+        minute      => $cron_minutes,
       }
       exec { 'create-mcollective-metadata':
         path    => "/opt/puppet/bin:/opt/puppetlabs/bin:${::path}",
-        command => "facter --yaml >${yaml_fact_path_real} 2>&1",
+        command => "facter -p --yaml >${yaml_fact_path_real} 2>&1",
         creates => $yaml_fact_path_real,
       }
     } else {
@@ -44,9 +52,9 @@ class mcollective::server::config::factsource::yaml (
       # PATH as environment is global. Therefore, prefix the command itself in
       # the cron job with the value of the PATH environment variable to use.
       cron { 'refresh-mcollective-metadata':
-        command => "bash -c 'export PATH=${path}; ${mcollective::site_libdir}/refresh-mcollective-metadata >/dev/null 2>&1'",
+        command => "/bin/sh -c 'export PATH=${path}; ${mcollective::site_libdir}/refresh-mcollective-metadata >/dev/null 2>&1'",
         user    => 'root',
-        minute  => [ '0', '15', '30', '45' ],
+        minute  => $cron_minutes,
         require => File["${mcollective::site_libdir}/refresh-mcollective-metadata"],
       }
 
@@ -57,11 +65,12 @@ class mcollective::server::config::factsource::yaml (
         require => File["${mcollective::site_libdir}/refresh-mcollective-metadata"],
       }
     }
-    mcollective::server::setting { 'factsource':
-      value => 'yaml',
-    }
-    mcollective::server::setting { 'plugin.yaml':
-      value => $yaml_fact_path_real,
-    }
+  }
+
+  mcollective::server::setting { 'factsource':
+    value => 'yaml',
+  }
+  mcollective::server::setting { 'plugin.yaml':
+    value => $yaml_fact_path_real,
   }
 }
