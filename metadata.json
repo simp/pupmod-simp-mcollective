@@ -1,7 +1,10 @@
 {
   "name": "simp-mcollective",
   "version": "2.3.2",
-  "author": ["puppetcommunity", "simp"],
+  "author": [
+    "puppetcommunity",
+    "simp"
+  ],
   "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster.",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-mcollective",
@@ -20,12 +23,12 @@
       "version_requirement": ">= 0.6.2 < 1.0.0"
     },
     {
-      "name": "puppetlabs/concat",
-      "version_requirement": "1.x"
+      "name": "puppetlabs/java_ks",
+      "version_requirement": ">= 1.4.0 < 2.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">=4.2.0 < 5.0.0"
+      "version_requirement": ">= 4.9.0 < 5.0.0"
     }
   ],
   "operatingsystem_support": [
