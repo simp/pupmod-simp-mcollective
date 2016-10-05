@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_018d8430",
+        "filename": "build/rpm_metadata/requires",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1004834
+      },
+      "writtenOn": "2016-10-05T18:07:05Z",
+      "side": 1,
+      "message": "Not necessary",
+      "revId": "51f0377169f813981a7ca79e6a76e2a9c4318bd1",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
