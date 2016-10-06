@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "baa041b7_62f68bd8",
+        "filename": "README.simp.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-06T21:23:16Z",
+      "side": 1,
+      "message": "True dat. I\u0027ll fix it.",
+      "parentUuid": "baa041b7_22b76322",
+      "range": {
+        "startLine": 41,
+        "startChar": 11,
+        "endLine": 41,
+        "endChar": 23
+      },
+      "revId": "7ade4f30f612df5a8700af83ab4004d133b96671",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "baa041b7_c23c3794",
         "filename": "README.simp.md",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-06T21:00:44Z",
       "side": 1,
       "message": "this path becomes incorrect when SIMP 6 comes out",
+      "range": {
+        "startLine": 66,
+        "startChar": 33,
+        "endLine": 66,
+        "endChar": 45
+      },
+      "revId": "7ade4f30f612df5a8700af83ab4004d133b96671",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_82f98fca",
+        "filename": "README.simp.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-06T21:23:16Z",
+      "side": 1,
+      "message": "You are correct.",
+      "parentUuid": "baa041b7_c23c3794",
       "range": {
         "startLine": 66,
         "startChar": 33,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "baa041b7_c20af7d0",
+        "filename": "README.simp.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-06T21:23:16Z",
+      "side": 1,
+      "message": "Not in pure RSA which is what mco requires. This is a required step well within the scope of what users need to do to set up.",
+      "parentUuid": "baa041b7_824bcf2a",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 3
+      },
+      "revId": "7ade4f30f612df5a8700af83ab4004d133b96671",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "baa041b7_025e9fe8",
         "filename": "README.simp.md",
         "patchSetId": 5
@@ -82,6 +154,30 @@
       "writtenOn": "2016-10-06T21:00:44Z",
       "side": 1,
       "message": "can our module generate this, or do I need to put it in manually?",
+      "range": {
+        "startLine": 144,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 71
+      },
+      "revId": "7ade4f30f612df5a8700af83ab4004d133b96671",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_a20ff3de",
+        "filename": "README.simp.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-06T21:23:16Z",
+      "side": 1,
+      "message": "Copy paste. It\u0027s a user doc, we can\u0027t specify things in home directories nor should it be stored on the master in a config.",
+      "parentUuid": "baa041b7_025e9fe8",
       "range": {
         "startLine": 144,
         "startChar": 0,
