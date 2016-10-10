@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_f3e8247d",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1005361
+      },
+      "writtenOn": "2016-10-10T18:21:49Z",
+      "side": 1,
+      "message": "Can we have an overview or checklist of things that need to be done to get this set up?",
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_f37ca472",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1005361
+      },
+      "writtenOn": "2016-10-10T18:21:49Z",
+      "side": 1,
+      "message": "alignment",
+      "range": {
+        "startLine": 172,
+        "startChar": 72,
+        "endLine": 172,
+        "endChar": 73
+      },
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_53bc706b",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1005361
+      },
+      "writtenOn": "2016-10-10T18:21:49Z",
+      "side": 1,
+      "message": "This is already on the host, should you mention that?",
+      "range": {
+        "startLine": 173,
+        "startChar": 51,
+        "endLine": 173,
+        "endChar": 65
+      },
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_d3d1a0fc",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1005361
+      },
+      "writtenOn": "2016-10-10T18:21:49Z",
+      "side": 1,
+      "message": "This could be made a bit clearer. Is the non-admin user the on that isn\u0027t in the \u0027admins\u0027 group?",
+      "range": {
+        "startLine": 177,
+        "startChar": 16,
+        "endLine": 177,
+        "endChar": 56
+      },
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
