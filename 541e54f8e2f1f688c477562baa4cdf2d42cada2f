@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "baa041b7_a548132e",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-10T21:13:31Z",
+      "side": 1,
+      "message": "This doc is already a list of things users need to do.",
+      "parentUuid": "baa041b7_f3e8247d",
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "baa041b7_f37ca472",
         "filename": "README.simp.md",
         "patchSetId": 6
@@ -53,6 +71,30 @@
       "writtenOn": "2016-10-10T18:21:49Z",
       "side": 1,
       "message": "This is already on the host, should you mention that?",
+      "range": {
+        "startLine": 173,
+        "startChar": 51,
+        "endLine": 173,
+        "endChar": 65
+      },
+      "revId": "541e54f8e2f1f688c477562baa4cdf2d42cada2f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_65b7ab21",
+        "filename": "README.simp.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-10-10T21:13:31Z",
+      "side": 1,
+      "message": "It\u0027s mentioned above in Key Setup.",
+      "parentUuid": "baa041b7_53bc706b",
       "range": {
         "startLine": 173,
         "startChar": 51,
