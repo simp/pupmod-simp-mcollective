@@ -1,10 +1,7 @@
 {
   "name": "simp-mcollective",
   "version": "2.3.3",
-  "author": [
-    "puppetcommunity",
-    "simp"
-  ],
+  "author": "SIMP Team",
   "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster.",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-mcollective",
