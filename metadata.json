@@ -1,6 +1,6 @@
 {
   "name": "simp-mcollective",
-  "version": "2.3.4",
+  "version": "3.0.0",
   "author": "SIMP Team",
   "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster.",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.4.0"
+      "version_requirement": ">= 4.0.0"
     }
   ],
   "description": "SIMP MCollective Puppet Module",
