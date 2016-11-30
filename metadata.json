@@ -1,84 +1,48 @@
 {
   "name": "simp-mcollective",
-  "version": "2.4.0",
-  "author": "simp",
+  "version": "3.0.0",
+  "author": "SIMP Team",
   "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster. Forked from voxpupuli/puppet-mcollective",
   "license": "Apache-2.0",
-  "source": "https://github.com/simp/puppet-mcollective.git",
-  "project_page": "https://github.com/simp/puppet-mcollective",
-  "issues_url": "https://github.com/simp/puppet-mcollective/issues",
+  "source": "https://github.com/simp/pupmod-simp-mcollective",
+  "project_page": "https://github.com/simp/pupmod-simp-mcollective",
+  "issues_url": "https://simp-project.atlassian.net",
   "tags": [ "voxpupuli", "mcollective" ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.4.0"
+      "version_requirement": ">= 4.0.0"
     }
   ],
-  "description": "MCollective Puppet Module",
-  "operatingsystem_support": [
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "SLES",
-      "operatingsystemrelease": [
-        "11 SP1"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "12.04",
-        "14.04",
-        "16.04"
-      ]
-    }
-  ],
+  "description": "SIMP MCollective Puppet Module",
   "dependencies": [
     {
-      "name": "richardc/datacat",
+      "name": "simp/puppet-datacat",
       "version_requirement": ">= 0.6.2 < 1.0.0"
     },
     {
+      "name": "simp/puppetlabs-java_ks",
+      "version_requirement": ">= 1.4.0 < 2.0.0"
+    },
+    {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">=4.2.0 < 5.0.0"
+      "version_requirement": ">= 4.9.0 < 5.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     }
   ]
 }
