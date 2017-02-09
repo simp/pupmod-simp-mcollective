@@ -2,7 +2,7 @@
   "name": "simp-mcollective",
   "version": "3.0.0",
   "author": "SIMP Team",
-  "summary": "Installs, configures, and manages MCollective agents, clients, and middleware of an MCollective cluster. Forked from voxpupuli/puppet-mcollective",
+  "summary": "Manages MCollective agents, clients, and middleware of an MCollective cluster. Forked from voxpupuli/puppet-mcollective",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-mcollective",
   "project_page": "https://github.com/simp/pupmod-simp-mcollective",
@@ -17,12 +17,12 @@
   "description": "SIMP MCollective Puppet Module",
   "dependencies": [
     {
-      "name": "simp/puppet-datacat",
+      "name": "richardc/datacat",
       "version_requirement": ">= 0.6.2 < 1.0.0"
     },
     {
-      "name": "simp/puppetlabs-java_ks",
-      "version_requirement": ">= 1.4.0 < 2.0.0"
+      "name": "puppetlabs/java_ks",
+      "version_requirement": ">= 1.4.1 < 2.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
