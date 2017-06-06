@@ -7,11 +7,15 @@
   "source": "https://github.com/simp/pupmod-simp-mcollective",
   "project_page": "https://github.com/simp/pupmod-simp-mcollective",
   "issues_url": "https://simp-project.atlassian.net",
-  "tags": [ "voxpupuli", "mcollective" ],
+  "tags": [
+    "voxpupuli",
+    "mcollective",
+    "simp"
+  ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.0.0"
+      "version_requirement": ">= 4.7.0 < 5.0.0"
     }
   ],
   "description": "SIMP MCollective Puppet Module",
